@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import '../../../core/util/result.dart';
-import '../local/secure_token_service.dart';
-import 'api_endpoints.dart';
+import '../remote/api_endpoints.dart';
+import 'secure_token_service.dart';
 
 final class DioService {
   final Dio _dio = Dio();
