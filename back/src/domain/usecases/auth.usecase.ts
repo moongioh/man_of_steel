@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from "@nestjs/common";
 import { IAuthUseCase } from '../interfaces/auth.usecase.interface';
 import { IUserRepository } from '../interfaces/user.repository.interface';
 import { JWTService } from '../../application/services/jwt.service';
@@ -9,6 +9,7 @@ import { UserEntity } from '../entities/user.entity';
 @Injectable()
 export class AuthUseCase implements IAuthUseCase {
   constructor(
+    @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,
     private readonly jwtService: JWTService,
     private readonly bcryptService: BcryptService,
