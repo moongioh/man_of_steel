@@ -10,7 +10,7 @@ exports.ENV = {
     MYSQL_DATABASE: process.env.MYSQL_DATABASE || 'semi_project',
     REDIS_HOST: process.env.REDIS_HOST || 'localhost',
     REDIS_PORT: parseInt(process.env.REDIS_PORT, 10) || 6379,
-    REDIS_PASSWORD: process.env.REDIS_PASSWORD || 'qwer1234',
+    REDIS_PASSWORD: process.env.REDIS_PASSWORD || '',
     JWT_SECRET: process.env.JWT_SECRET || 'qwer1234',
     JWT_EXPIRATION: process.env.JWT_EXPIRATION || '1h',
 };
