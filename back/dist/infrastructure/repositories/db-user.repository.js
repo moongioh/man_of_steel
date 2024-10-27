@@ -13,44 +13,45 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DBUserRepository = void 0;
-const typeorm_1 = require("@nestjs/typeorm");
-const typeorm_2 = require("typeorm");
+const common_1 = require("@nestjs/common");
+const Result_1 = require("../../util/Result");
+const typeorm_1 = require("typeorm");
+const typeorm_2 = require("@nestjs/typeorm");
 const user_entity_1 = require("../../domain/entities/user.entity");
-const result_1 = require("../../util/result");
 const user_dao_1 = require("../dao/user.dao");
 let DBUserRepository = class DBUserRepository {
     constructor(userRepository) {
         this.userRepository = userRepository;
     }
     async findByEmail(email) {
-        const user = await this.userRepository.findOne({ where: { email } });
-        if (!user) {
-            return result_1.Result.failure(new Error('User not found'));
+        const userDAO = await this.userRepository.findOne({ where: { email } });
+        if (!userDAO) {
+            return Result_1.Result.failure(new Error('User not found'));
         }
-        const userEntity = new user_entity_1.UserEntity(user.id, user.email, user.hashedPassword);
-        return result_1.Result.success(userEntity);
+        const userEntity = new user_entity_1.UserEntity(userDAO.id, userDAO.email, undefined, userDAO.hashedPassword);
+        return Result_1.Result.success(userEntity);
     }
     async findById(id) {
-        const user = await this.userRepository.findOne({ where: { id } });
-        if (!user) {
-            return result_1.Result.failure(new Error('User not found'));
+        const userDAO = await this.userRepository.findOne({ where: { id } });
+        if (!userDAO) {
+            return Result_1.Result.failure(new Error('User not found'));
         }
-        const userEntity = new user_entity_1.UserEntity(user.id, user.email, user.hashedPassword);
-        return result_1.Result.success(userEntity);
+        const userEntity = new user_entity_1.UserEntity(userDAO.id, userDAO.email, undefined, userDAO.hashedPassword);
+        return Result_1.Result.success(userEntity);
     }
     async save(user) {
-        const userDAO = this.userRepository.create({
-            id: user.id,
-            email: user.email,
-            hashedPassword: user.getHashedPassword(),
-        });
+        const userDAO = new user_dao_1.UserDAO();
+        userDAO.id = user.id;
+        userDAO.email = user.email;
+        userDAO.hashedPassword = user.hashedPassword;
         await this.userRepository.save(userDAO);
-        return result_1.Result.success(undefined);
+        return Result_1.Result.success(undefined);
     }
 };
 exports.DBUserRepository = DBUserRepository;
 exports.DBUserRepository = DBUserRepository = __decorate([
-    __param(0, (0, typeorm_1.InjectRepository)(user_dao_1.UserDAO)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_2.InjectRepository)(user_dao_1.UserDAO)),
+    __metadata("design:paramtypes", [typeorm_1.Repository])
 ], DBUserRepository);
 //# sourceMappingURL=db-user.repository.js.map

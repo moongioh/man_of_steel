@@ -1,5 +1,5 @@
 export declare class RedisService {
-    private client;
+    private readonly client;
     constructor();
     set(key: string, value: string, options?: {
         EX?: number;

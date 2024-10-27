@@ -1,25 +1,16 @@
+import { Injectable } from '@nestjs/common';
 import { AuthUseCase } from '../../domain/usecases/auth.usecase';
-import { Result } from '../../util/result';
 import { JWTService } from './jwt.service';
 import { UserEntity } from '../../domain/entities/user.entity';
-import { BcryptService } from '../../infrastructure/services/bcrypt.service';
-import { IUserRepository } from '../../domain/interfaces/user.repository.interface';
 import { UserDTO } from '../../presentation/dto/user.dto';
+import { Result } from '../../util/Result';
 
+@Injectable()
 export class AuthService {
-  private authUseCase: AuthUseCase;
-
   constructor(
-    userRepository: IUserRepository,
-    bcryptService: BcryptService,
-    jwtService: JWTService,
-  ) {
-    this.authUseCase = new AuthUseCase(
-      userRepository,
-      bcryptService,
-      jwtService,
-    );
-  }
+    private readonly authUseCase: AuthUseCase,
+    private readonly jwtService: JWTService,
+  ) {}
 
   public async login(
     credentials: UserDTO,
@@ -40,12 +31,7 @@ export class AuthService {
   public async refreshTokens(
     userId: string,
     refreshToken: string,
-  ): Promise<
-    Result<{
-      accessToken: string;
-      refreshToken: string;
-    }>
-  > {
+  ): Promise<Result<{ accessToken: string; refreshToken: string }>> {
     return this.authUseCase.refreshTokens(userId, refreshToken);
   }
 
@@ -54,5 +40,14 @@ export class AuthService {
     accessToken: string,
   ): Promise<Result<void>> {
     return this.authUseCase.logout(userId, accessToken);
+  }
+
+  public async verifyToken(token: string): Promise<boolean> {
+    try {
+      await this.jwtService.verifyAccessToken(token);
+      return true;
+    } catch {
+      return false;
+    }
   }
 }

@@ -1,11 +1,11 @@
-import { Result } from '../../util/result';
+import { AuthUseCase } from '../../domain/usecases/auth.usecase';
 import { JWTService } from './jwt.service';
-import { BcryptService } from '../../infrastructure/services/bcrypt.service';
-import { IUserRepository } from '../../domain/interfaces/user.repository.interface';
 import { UserDTO } from '../../presentation/dto/user.dto';
+import { Result } from '../../util/Result';
 export declare class AuthService {
-    private authUseCase;
-    constructor(userRepository: IUserRepository, bcryptService: BcryptService, jwtService: JWTService);
+    private readonly authUseCase;
+    private readonly jwtService;
+    constructor(authUseCase: AuthUseCase, jwtService: JWTService);
     login(credentials: UserDTO): Promise<Result<{
         accessToken: string;
         refreshToken: string;
@@ -16,4 +16,5 @@ export declare class AuthService {
         refreshToken: string;
     }>>;
     logout(userId: string, accessToken: string): Promise<Result<void>>;
+    verifyToken(token: string): Promise<boolean>;
 }

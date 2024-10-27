@@ -1,26 +1,16 @@
-import { UserEntity } from '../../domain/entities/user.entity';
-import { Result } from '../../util/result';
+import { Injectable } from '@nestjs/common';
+import { Result } from '../../util/Result';
+import { IUserRepository } from '../../domain/interfaces/user.repository.interface';
 import { DBUserRepository } from './db-user.repository';
 import { CacheUserRepository } from './cache-user.repository';
-import { IUserRepository } from '../../domain/interfaces/user.repository.interface';
-import { BcryptService } from '../services/bcrypt.service';
-import { Injectable } from '@nestjs/common';
+import { UserEntity } from '../../domain/entities/user.entity';
 
 @Injectable()
 export class UserRepository implements IUserRepository {
-  private dbUserRepository: DBUserRepository;
-  private cacheUserRepository: CacheUserRepository;
-  private bcryptService: BcryptService;
-
   constructor(
-    dbUserRepository: DBUserRepository,
-    cacheUserRepository: CacheUserRepository,
-    bcryptService: BcryptService,
-  ) {
-    this.dbUserRepository = dbUserRepository;
-    this.cacheUserRepository = cacheUserRepository;
-    this.bcryptService = bcryptService;
-  }
+    private readonly dbUserRepository: DBUserRepository,
+    private readonly cacheUserRepository: CacheUserRepository,
+  ) {}
 
   public async findByEmail(email: string): Promise<Result<UserEntity>> {
     return this.dbUserRepository.findByEmail(email);

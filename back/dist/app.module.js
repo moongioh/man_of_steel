@@ -9,16 +9,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
+const user_dao_1 = require("./infrastructure/dao/user.dao");
 const auth_controller_1 = require("./presentation/controllers/auth.controller");
 const auth_service_1 = require("./application/services/auth.service");
+const auth_usecase_1 = require("./domain/usecases/auth.usecase");
 const jwt_service_1 = require("./application/services/jwt.service");
+const bcrypt_service_1 = require("./infrastructure/services/bcrypt.service");
+const redis_service_1 = require("./infrastructure/services/redis.service");
 const user_repository_1 = require("./infrastructure/repositories/user.repository");
 const db_user_repository_1 = require("./infrastructure/repositories/db-user.repository");
 const cache_user_repository_1 = require("./infrastructure/repositories/cache-user.repository");
-const bcrypt_service_1 = require("./infrastructure/services/bcrypt.service");
-const mysql_service_1 = require("./infrastructure/services/mysql.service");
-const redis_service_1 = require("./infrastructure/services/redis.service");
-const user_dao_1 = require("./infrastructure/dao/user.dao");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -27,11 +27,11 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'mysql',
-                host: 'localhost',
-                port: 3306,
-                username: 'suojae',
-                password: 'qwer1234',
-                database: 'semi_project',
+                host: process.env.MYSQL_HOST || 'localhost',
+                port: parseInt(process.env.MYSQL_PORT, 10) || 3306,
+                username: process.env.MYSQL_USER || 'root',
+                password: process.env.MYSQL_PASSWORD || '',
+                database: process.env.MYSQL_DATABASE || 'test',
                 entities: [user_dao_1.UserDAO],
                 synchronize: true,
                 logging: false,
@@ -41,20 +41,13 @@ exports.AppModule = AppModule = __decorate([
         controllers: [auth_controller_1.AuthController],
         providers: [
             auth_service_1.AuthService,
+            auth_usecase_1.AuthUseCase,
             jwt_service_1.JWTService,
             bcrypt_service_1.BcryptService,
-            mysql_service_1.MySQLService,
             redis_service_1.RedisService,
             {
                 provide: 'IUserRepository',
                 useClass: user_repository_1.UserRepository,
-            },
-            {
-                provide: user_repository_1.UserRepository,
-                useFactory: (dbRepo, cacheRepo, bcryptService) => {
-                    return new user_repository_1.UserRepository(dbRepo, cacheRepo, bcryptService);
-                },
-                inject: [db_user_repository_1.DBUserRepository, cache_user_repository_1.CacheUserRepository, bcrypt_service_1.BcryptService],
             },
             db_user_repository_1.DBUserRepository,
             cache_user_repository_1.CacheUserRepository,

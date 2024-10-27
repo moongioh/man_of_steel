@@ -1,14 +1,12 @@
-import { UserEntity } from '../../domain/entities/user.entity';
-import { Result } from '../../util/result';
+import { Result } from '../../util/Result';
+import { IUserRepository } from '../../domain/interfaces/user.repository.interface';
 import { DBUserRepository } from './db-user.repository';
 import { CacheUserRepository } from './cache-user.repository';
-import { IUserRepository } from '../../domain/interfaces/user.repository.interface';
-import { BcryptService } from '../services/bcrypt.service';
+import { UserEntity } from '../../domain/entities/user.entity';
 export declare class UserRepository implements IUserRepository {
-    private dbUserRepository;
-    private cacheUserRepository;
-    private bcryptService;
-    constructor(dbUserRepository: DBUserRepository, cacheUserRepository: CacheUserRepository, bcryptService: BcryptService);
+    private readonly dbUserRepository;
+    private readonly cacheUserRepository;
+    constructor(dbUserRepository: DBUserRepository, cacheUserRepository: CacheUserRepository);
     findByEmail(email: string): Promise<Result<UserEntity>>;
     findById(id: string): Promise<Result<UserEntity>>;
     save(user: UserEntity): Promise<Result<void>>;

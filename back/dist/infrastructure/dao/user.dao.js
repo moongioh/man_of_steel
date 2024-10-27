@@ -12,11 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserDAO = void 0;
 const typeorm_1 = require("typeorm");
 let UserDAO = class UserDAO {
-    constructor(id, email, hashedPassword) {
-        this.id = id;
-        this.email = email;
-        this.hashedPassword = hashedPassword;
-    }
 };
 exports.UserDAO = UserDAO;
 __decorate([
@@ -32,7 +27,6 @@ __decorate([
     __metadata("design:type", String)
 ], UserDAO.prototype, "hashedPassword", void 0);
 exports.UserDAO = UserDAO = __decorate([
-    (0, typeorm_1.Entity)('users'),
-    __metadata("design:paramtypes", [String, String, String])
+    (0, typeorm_1.Entity)('users')
 ], UserDAO);
 //# sourceMappingURL=user.dao.js.map

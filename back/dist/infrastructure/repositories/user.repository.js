@@ -10,15 +10,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserRepository = void 0;
+const common_1 = require("@nestjs/common");
 const db_user_repository_1 = require("./db-user.repository");
 const cache_user_repository_1 = require("./cache-user.repository");
-const bcrypt_service_1 = require("../services/bcrypt.service");
-const common_1 = require("@nestjs/common");
 let UserRepository = class UserRepository {
-    constructor(dbUserRepository, cacheUserRepository, bcryptService) {
+    constructor(dbUserRepository, cacheUserRepository) {
         this.dbUserRepository = dbUserRepository;
         this.cacheUserRepository = cacheUserRepository;
-        this.bcryptService = bcryptService;
     }
     async findByEmail(email) {
         return this.dbUserRepository.findByEmail(email);
@@ -46,7 +44,6 @@ exports.UserRepository = UserRepository;
 exports.UserRepository = UserRepository = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [db_user_repository_1.DBUserRepository,
-        cache_user_repository_1.CacheUserRepository,
-        bcrypt_service_1.BcryptService])
+        cache_user_repository_1.CacheUserRepository])
 ], UserRepository);
 //# sourceMappingURL=user.repository.js.map

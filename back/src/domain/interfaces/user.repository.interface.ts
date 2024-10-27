@@ -1,5 +1,5 @@
+import { Result } from '../../util/Result';
 import { UserEntity } from '../entities/user.entity';
-import { Result } from '../../util/result';
 
 export interface IUserRepository {
   findByEmail(email: string): Promise<Result<UserEntity>>;

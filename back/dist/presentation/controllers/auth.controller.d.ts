@@ -1,5 +1,5 @@
+import { Result } from '../../util/Result';
 import { AuthService } from '../../application/services/auth.service';
-import { Result } from '../../util/result';
 import { UserDTO } from '../dto/user.dto';
 export declare class AuthController {
     private readonly authService;

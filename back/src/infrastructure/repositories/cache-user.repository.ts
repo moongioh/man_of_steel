@@ -1,13 +1,9 @@
-import { RedisService } from '../services/redis.service';
 import { Injectable } from '@nestjs/common';
+import { RedisService } from '../services/redis.service';
 
 @Injectable()
 export class CacheUserRepository {
-  private redisService: RedisService;
-
-  constructor(redisService: RedisService) {
-    this.redisService = redisService;
-  }
+  constructor(private readonly redisService: RedisService) {}
 
   public async saveRefreshToken(
     userId: string,

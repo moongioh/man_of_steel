@@ -1,24 +1,18 @@
-import { UserEntity } from '../entities/user.entity';
-import { Result } from '../../util/result';
-import { BcryptService } from '../../infrastructure/services/bcrypt.service';
-import { JWTService } from '../../application/services/jwt.service';
-import { IUserRepository } from '../interfaces/user.repository.interface';
+import { Injectable } from '@nestjs/common';
 import { IAuthUseCase } from '../interfaces/auth.usecase.interface';
+import { IUserRepository } from '../interfaces/user.repository.interface';
+import { JWTService } from '../../application/services/jwt.service';
+import { BcryptService } from '../../infrastructure/services/bcrypt.service';
+import { Result } from '../../util/Result';
+import { UserEntity } from '../entities/user.entity';
 
+@Injectable()
 export class AuthUseCase implements IAuthUseCase {
-  private userRepository: IUserRepository;
-  private bcryptService: BcryptService;
-  private jwtService: JWTService;
-
   constructor(
-    userRepository: IUserRepository,
-    bcryptService: BcryptService,
-    jwtService: JWTService,
-  ) {
-    this.userRepository = userRepository;
-    this.bcryptService = bcryptService;
-    this.jwtService = jwtService;
-  }
+    private readonly userRepository: IUserRepository,
+    private readonly jwtService: JWTService,
+    private readonly bcryptService: BcryptService,
+  ) {}
 
   public async executeLogin(
     credentials: UserEntity,
@@ -29,9 +23,9 @@ export class AuthUseCase implements IAuthUseCase {
     }
 
     const user = userResult.getValue();
-    const isPasswordValid = await user.checkPassword(
-      credentials.getHashedPassword(),
-      this.bcryptService,
+    const isPasswordValid = await this.bcryptService.compare(
+      credentials.password,
+      user.hashedPassword,
     );
     if (!isPasswordValid) {
       return Result.failure(new Error('Invalid credentials'));
@@ -53,7 +47,8 @@ export class AuthUseCase implements IAuthUseCase {
       return Result.failure(new Error('User already exists'));
     }
 
-    await user.setPassword(user.getHashedPassword(), this.bcryptService);
+    const hashedPassword = await this.bcryptService.hash(user.password);
+    user.hashedPassword = hashedPassword;
     await this.userRepository.save(user);
     return Result.success(undefined);
   }
@@ -61,12 +56,7 @@ export class AuthUseCase implements IAuthUseCase {
   public async refreshTokens(
     userId: string,
     refreshToken: string,
-  ): Promise<
-    Result<{
-      accessToken: string;
-      refreshToken: string;
-    }>
-  > {
+  ): Promise<Result<{ accessToken: string; refreshToken: string }>> {
     const storedRefreshToken =
       await this.userRepository.getRefreshToken(userId);
     if (storedRefreshToken !== refreshToken) {

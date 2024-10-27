@@ -1,9 +1,11 @@
-import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable } from '@nestjs/common';
+import { Result } from '../../util/Result';
 import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../../domain/entities/user.entity';
-import { Result } from '../../util/result';
 import { UserDAO } from '../dao/user.dao';
 
+@Injectable()
 export class DBUserRepository {
   constructor(
     @InjectRepository(UserDAO)
@@ -11,33 +13,42 @@ export class DBUserRepository {
   ) {}
 
   public async findByEmail(email: string): Promise<Result<UserEntity>> {
-    const user = await this.userRepository.findOne({ where: { email } });
+    const userDAO = await this.userRepository.findOne({ where: { email } });
 
-    if (!user) {
+    if (!userDAO) {
       return Result.failure(new Error('User not found'));
     }
 
-    const userEntity = new UserEntity(user.id, user.email, user.hashedPassword);
+    const userEntity = new UserEntity(
+      userDAO.id,
+      userDAO.email,
+      undefined,
+      userDAO.hashedPassword,
+    );
     return Result.success(userEntity);
   }
 
   public async findById(id: string): Promise<Result<UserEntity>> {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const userDAO = await this.userRepository.findOne({ where: { id } });
 
-    if (!user) {
+    if (!userDAO) {
       return Result.failure(new Error('User not found'));
     }
 
-    const userEntity = new UserEntity(user.id, user.email, user.hashedPassword);
+    const userEntity = new UserEntity(
+      userDAO.id,
+      userDAO.email,
+      undefined,
+      userDAO.hashedPassword,
+    );
     return Result.success(userEntity);
   }
 
   public async save(user: UserEntity): Promise<Result<void>> {
-    const userDAO = this.userRepository.create({
-      id: user.id,
-      email: user.email,
-      hashedPassword: user.getHashedPassword(),
-    });
+    const userDAO = new UserDAO();
+    userDAO.id = user.id;
+    userDAO.email = user.email;
+    userDAO.hashedPassword = user.hashedPassword;
 
     await this.userRepository.save(userDAO);
     return Result.success(undefined);

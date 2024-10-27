@@ -1,5 +1,5 @@
 export declare class MySQLService {
-    private pool;
+    private readonly pool;
     constructor();
     query(sql: string, params: any[]): Promise<any[]>;
 }

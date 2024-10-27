@@ -10,8 +10,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CacheUserRepository = void 0;
-const redis_service_1 = require("../services/redis.service");
 const common_1 = require("@nestjs/common");
+const redis_service_1 = require("../services/redis.service");
 let CacheUserRepository = class CacheUserRepository {
     constructor(redisService) {
         this.redisService = redisService;

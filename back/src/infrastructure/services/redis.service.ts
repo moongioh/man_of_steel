@@ -1,13 +1,18 @@
-import { createClient } from 'redis';
-import { ENV } from '../../env.config';
+// src/infrastructure/services/RedisService.ts
 
+import { Injectable } from '@nestjs/common';
+import { createClient } from 'redis';
+
+@Injectable()
 export class RedisService {
-  private client: ReturnType<typeof createClient>;
+  private readonly client;
 
   constructor() {
     this.client = createClient({
-      url: `redis://${ENV.REDIS_HOST}:${ENV.REDIS_PORT}`,
-      password: ENV.REDIS_PASSWORD,
+      url: `redis://${process.env.REDIS_HOST || 'localhost'}:${
+        process.env.REDIS_PORT || 6379
+      }`,
+      password: process.env.REDIS_PASSWORD || '',
     });
     this.client.connect();
   }

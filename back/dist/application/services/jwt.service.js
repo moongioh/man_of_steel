@@ -15,6 +15,12 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -25,11 +31,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JWTService = void 0;
 const jwt = __importStar(require("jsonwebtoken"));
-const env_config_1 = require("../../env.config");
-class JWTService {
+const common_1 = require("@nestjs/common");
+let JWTService = class JWTService {
     constructor() {
-        this.accessTokenSecret = env_config_1.ENV.JWT_SECRET;
-        this.refreshTokenSecret = env_config_1.ENV.JWT_SECRET;
+        this.accessTokenSecret = process.env.JWT_SECRET || 'default_secret';
+        this.refreshTokenSecret = process.env.JWT_SECRET || 'default_secret';
     }
     signAccessToken(payload) {
         return jwt.sign(payload, this.accessTokenSecret, { expiresIn: '15m' });
@@ -43,6 +49,9 @@ class JWTService {
     verifyRefreshToken(token) {
         return jwt.verify(token, this.refreshTokenSecret);
     }
-}
+};
 exports.JWTService = JWTService;
+exports.JWTService = JWTService = __decorate([
+    (0, common_1.Injectable)()
+], JWTService);
 //# sourceMappingURL=jwt.service.js.map

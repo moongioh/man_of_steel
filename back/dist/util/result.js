@@ -7,19 +7,19 @@ class Result {
         this._error = error;
     }
     static success(value) {
-        return new Result(value ?? null, null);
+        return new Result(value, undefined);
     }
     static failure(error) {
-        return new Result(null, error);
+        return new Result(undefined, error);
     }
     isSuccess() {
-        return this._error === null;
+        return this._error === undefined;
     }
     isFailure() {
         return !this.isSuccess();
     }
     getValue() {
-        if (!this.isSuccess()) {
+        if (this.isFailure()) {
             throw new Error('Cannot get the value of an error result');
         }
         return this._value;
@@ -30,27 +30,6 @@ class Result {
         }
         return this._error;
     }
-    map(fn) {
-        if (this.isSuccess()) {
-            return Result.success(fn(this._value));
-        }
-        else {
-            return Result.failure(this._error);
-        }
-    }
-    forEach(fn) {
-        if (this.isSuccess()) {
-            fn(this._value);
-        }
-    }
-    fold(onSuccess, onFailure) {
-        if (this.isSuccess()) {
-            return onSuccess(this._value);
-        }
-        else {
-            return onFailure(this._error);
-        }
-    }
 }
 exports.Result = Result;
-//# sourceMappingURL=result.js.map
+//# sourceMappingURL=Result.js.map

@@ -1,18 +1,20 @@
+// src/infrastructure/services/BcryptService.ts
+
 import * as bcrypt from 'bcrypt';
-import { ENV } from '../../env.config';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class BcryptService {
-  private readonly saltRounds: number;
+  private readonly saltRounds: number = 10;
 
-  constructor() {
-    this.saltRounds = ENV.BCRYPT_SALT_ROUNDS;
-  }
-
-  async hash(password: string): Promise<string> {
+  public async hash(password: string): Promise<string> {
     return bcrypt.hash(password, this.saltRounds);
   }
 
-  async compare(password: string, hashedPassword: string): Promise<boolean> {
-    return bcrypt.compare(password, hashedPassword);
+  public async compare(
+    rawPassword: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    return bcrypt.compare(rawPassword, hashedPassword);
   }
 }

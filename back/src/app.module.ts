@@ -1,25 +1,25 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserDAO } from './infrastructure/dao/user.dao';
 import { AuthController } from './presentation/controllers/auth.controller';
 import { AuthService } from './application/services/auth.service';
+import { AuthUseCase } from './domain/usecases/auth.usecase';
 import { JWTService } from './application/services/jwt.service';
+import { BcryptService } from './infrastructure/services/bcrypt.service';
+import { RedisService } from './infrastructure/services/redis.service';
 import { UserRepository } from './infrastructure/repositories/user.repository';
 import { DBUserRepository } from './infrastructure/repositories/db-user.repository';
 import { CacheUserRepository } from './infrastructure/repositories/cache-user.repository';
-import { BcryptService } from './infrastructure/services/bcrypt.service';
-import { MySQLService } from './infrastructure/services/mysql.service';
-import { RedisService } from './infrastructure/services/redis.service';
-import { UserDAO } from './infrastructure/dao/user.dao';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'suojae',
-      password: 'qwer1234',
-      database: 'semi_project',
+      host: process.env.MYSQL_HOST || 'localhost',
+      port: parseInt(process.env.MYSQL_PORT, 10) || 3306,
+      username: process.env.MYSQL_USER || 'root',
+      password: process.env.MYSQL_PASSWORD || '',
+      database: process.env.MYSQL_DATABASE || 'test',
       entities: [UserDAO],
       synchronize: true,
       logging: false,
@@ -29,24 +29,13 @@ import { UserDAO } from './infrastructure/dao/user.dao';
   controllers: [AuthController],
   providers: [
     AuthService,
+    AuthUseCase,
     JWTService,
     BcryptService,
-    MySQLService,
     RedisService,
     {
       provide: 'IUserRepository',
       useClass: UserRepository,
-    },
-    {
-      provide: UserRepository,
-      useFactory: (
-        dbRepo: DBUserRepository,
-        cacheRepo: CacheUserRepository,
-        bcryptService: BcryptService,
-      ) => {
-        return new UserRepository(dbRepo, cacheRepo, bcryptService);
-      },
-      inject: [DBUserRepository, CacheUserRepository, BcryptService],
     },
     DBUserRepository,
     CacheUserRepository,
