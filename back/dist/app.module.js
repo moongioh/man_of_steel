@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
 const auth_controller_1 = require("./presentation/controllers/auth.controller");
 const auth_service_1 = require("./application/services/auth.service");
 const jwt_service_1 = require("./application/services/jwt.service");
@@ -17,12 +18,26 @@ const cache_user_repository_1 = require("./infrastructure/repositories/cache-use
 const bcrypt_service_1 = require("./infrastructure/services/bcrypt.service");
 const mysql_service_1 = require("./infrastructure/services/mysql.service");
 const redis_service_1 = require("./infrastructure/services/redis.service");
+const user_dao_1 = require("./infrastructure/dao/user.dao");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [],
+        imports: [
+            typeorm_1.TypeOrmModule.forRoot({
+                type: 'mysql',
+                host: 'localhost',
+                port: 3306,
+                username: 'suojae',
+                password: 'qwer1234',
+                database: 'semi_project',
+                entities: [user_dao_1.UserDAO],
+                synchronize: true,
+                logging: false,
+            }),
+            typeorm_1.TypeOrmModule.forFeature([user_dao_1.UserDAO]),
+        ],
         controllers: [auth_controller_1.AuthController],
         providers: [
             auth_service_1.AuthService,
@@ -30,19 +45,19 @@ exports.AppModule = AppModule = __decorate([
             bcrypt_service_1.BcryptService,
             mysql_service_1.MySQLService,
             redis_service_1.RedisService,
-            db_user_repository_1.DBUserRepository,
-            cache_user_repository_1.CacheUserRepository,
             {
                 provide: 'IUserRepository',
                 useClass: user_repository_1.UserRepository,
             },
             {
-                provide: auth_service_1.AuthService,
-                useFactory: (userRepository, bcryptService, jwtService) => {
-                    return new auth_service_1.AuthService(userRepository, bcryptService, jwtService);
+                provide: user_repository_1.UserRepository,
+                useFactory: (dbRepo, cacheRepo, bcryptService) => {
+                    return new user_repository_1.UserRepository(dbRepo, cacheRepo, bcryptService);
                 },
-                inject: ['IUserRepository', bcrypt_service_1.BcryptService, jwt_service_1.JWTService],
+                inject: [db_user_repository_1.DBUserRepository, cache_user_repository_1.CacheUserRepository, bcrypt_service_1.BcryptService],
             },
+            db_user_repository_1.DBUserRepository,
+            cache_user_repository_1.CacheUserRepository,
         ],
     })
 ], AppModule);

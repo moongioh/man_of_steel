@@ -8,50 +8,49 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DBUserRepository = void 0;
+const typeorm_1 = require("@nestjs/typeorm");
+const typeorm_2 = require("typeorm");
 const user_entity_1 = require("../../domain/entities/user.entity");
 const result_1 = require("../../util/result");
-const mysql_service_1 = require("../services/mysql.service");
 const user_dao_1 = require("../dao/user.dao");
-const common_1 = require("@nestjs/common");
 let DBUserRepository = class DBUserRepository {
-    constructor(mysqlService) {
-        this.mysqlService = mysqlService;
+    constructor(userRepository) {
+        this.userRepository = userRepository;
     }
     async findByEmail(email) {
-        const sql = 'SELECT * FROM users WHERE email = ?';
-        const rows = await this.mysqlService.query(sql, [email]);
-        if (rows.length === 0) {
+        const user = await this.userRepository.findOne({ where: { email } });
+        if (!user) {
             return result_1.Result.failure(new Error('User not found'));
         }
-        const userDAO = new user_dao_1.UserDAO(rows[0].id, rows[0].email, rows[0].hashedPassword);
-        const userEntity = new user_entity_1.UserEntity(userDAO.id, userDAO.email, userDAO.hashedPassword);
+        const userEntity = new user_entity_1.UserEntity(user.id, user.email, user.hashedPassword);
         return result_1.Result.success(userEntity);
     }
     async findById(id) {
-        const sql = 'SELECT * FROM users WHERE id = ?';
-        const rows = await this.mysqlService.query(sql, [id]);
-        if (rows.length === 0) {
+        const user = await this.userRepository.findOne({ where: { id } });
+        if (!user) {
             return result_1.Result.failure(new Error('User not found'));
         }
-        const userDAO = new user_dao_1.UserDAO(rows[0].id, rows[0].email, rows[0].hashedPassword);
-        const userEntity = new user_entity_1.UserEntity(userDAO.id, userDAO.email, userDAO.hashedPassword);
+        const userEntity = new user_entity_1.UserEntity(user.id, user.email, user.hashedPassword);
         return result_1.Result.success(userEntity);
     }
     async save(user) {
-        const sql = 'INSERT INTO users (id, email, hashedPassword) VALUES (?, ?, ?)';
-        await this.mysqlService.query(sql, [
-            user.id,
-            user.email,
-            user.getHashedPassword(),
-        ]);
+        const userDAO = this.userRepository.create({
+            id: user.id,
+            email: user.email,
+            hashedPassword: user.getHashedPassword(),
+        });
+        await this.userRepository.save(userDAO);
         return result_1.Result.success(undefined);
     }
 };
 exports.DBUserRepository = DBUserRepository;
 exports.DBUserRepository = DBUserRepository = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [mysql_service_1.MySQLService])
+    __param(0, (0, typeorm_1.InjectRepository)(user_dao_1.UserDAO)),
+    __metadata("design:paramtypes", [typeorm_2.Repository])
 ], DBUserRepository);
 //# sourceMappingURL=db-user.repository.js.map

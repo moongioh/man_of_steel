@@ -1,69 +1,45 @@
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { UserEntity } from '../../domain/entities/user.entity';
 import { Result } from '../../util/result';
-import { MySQLService } from '../services/mysql.service';
 import { UserDAO } from '../dao/user.dao';
-import { Injectable } from '@nestjs/common';
 
-@Injectable()
 export class DBUserRepository {
-  private mysqlService: MySQLService;
-
-  constructor(mysqlService: MySQLService) {
-    this.mysqlService = mysqlService;
-  }
+  constructor(
+    @InjectRepository(UserDAO)
+    private readonly userRepository: Repository<UserDAO>,
+  ) {}
 
   public async findByEmail(email: string): Promise<Result<UserEntity>> {
-    const sql = 'SELECT * FROM users WHERE email = ?';
-    const rows = await this.mysqlService.query(sql, [email]);
+    const user = await this.userRepository.findOne({ where: { email } });
 
-    if (rows.length === 0) {
+    if (!user) {
       return Result.failure(new Error('User not found'));
     }
 
-    const userDAO = new UserDAO(
-      rows[0].id,
-      rows[0].email,
-      rows[0].hashedPassword,
-    );
-    const userEntity = new UserEntity(
-      userDAO.id,
-      userDAO.email,
-      userDAO.hashedPassword,
-    );
-
+    const userEntity = new UserEntity(user.id, user.email, user.hashedPassword);
     return Result.success(userEntity);
   }
 
   public async findById(id: string): Promise<Result<UserEntity>> {
-    const sql = 'SELECT * FROM users WHERE id = ?';
-    const rows = await this.mysqlService.query(sql, [id]);
+    const user = await this.userRepository.findOne({ where: { id } });
 
-    if (rows.length === 0) {
+    if (!user) {
       return Result.failure(new Error('User not found'));
     }
 
-    const userDAO = new UserDAO(
-      rows[0].id,
-      rows[0].email,
-      rows[0].hashedPassword,
-    );
-    const userEntity = new UserEntity(
-      userDAO.id,
-      userDAO.email,
-      userDAO.hashedPassword,
-    );
-
+    const userEntity = new UserEntity(user.id, user.email, user.hashedPassword);
     return Result.success(userEntity);
   }
 
   public async save(user: UserEntity): Promise<Result<void>> {
-    const sql =
-      'INSERT INTO users (id, email, hashedPassword) VALUES (?, ?, ?)';
-    await this.mysqlService.query(sql, [
-      user.id,
-      user.email,
-      user.getHashedPassword(),
-    ]);
+    const userDAO = this.userRepository.create({
+      id: user.id,
+      email: user.email,
+      hashedPassword: user.getHashedPassword(),
+    });
+
+    await this.userRepository.save(userDAO);
     return Result.success(undefined);
   }
 }

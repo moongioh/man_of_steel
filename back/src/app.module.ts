@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthController } from './presentation/controllers/auth.controller';
 import { AuthService } from './application/services/auth.service';
 import { JWTService } from './application/services/jwt.service';
@@ -8,9 +9,23 @@ import { CacheUserRepository } from './infrastructure/repositories/cache-user.re
 import { BcryptService } from './infrastructure/services/bcrypt.service';
 import { MySQLService } from './infrastructure/services/mysql.service';
 import { RedisService } from './infrastructure/services/redis.service';
+import { UserDAO } from './infrastructure/dao/user.dao';
 
 @Module({
-  imports: [],
+  imports: [
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: 'localhost',
+      port: 3306,
+      username: 'suojae',
+      password: 'qwer1234',
+      database: 'semi_project',
+      entities: [UserDAO],
+      synchronize: true,
+      logging: false,
+    }),
+    TypeOrmModule.forFeature([UserDAO]),
+  ],
   controllers: [AuthController],
   providers: [
     AuthService,
@@ -18,23 +33,23 @@ import { RedisService } from './infrastructure/services/redis.service';
     BcryptService,
     MySQLService,
     RedisService,
-    DBUserRepository,
-    CacheUserRepository,
     {
       provide: 'IUserRepository',
       useClass: UserRepository,
     },
     {
-      provide: AuthService,
+      provide: UserRepository,
       useFactory: (
-        userRepository: UserRepository,
+        dbRepo: DBUserRepository,
+        cacheRepo: CacheUserRepository,
         bcryptService: BcryptService,
-        jwtService: JWTService,
       ) => {
-        return new AuthService(userRepository, bcryptService, jwtService);
+        return new UserRepository(dbRepo, cacheRepo, bcryptService);
       },
-      inject: ['IUserRepository', BcryptService, JWTService],
+      inject: [DBUserRepository, CacheUserRepository, BcryptService],
     },
+    DBUserRepository,
+    CacheUserRepository,
   ],
 })
 export class AppModule {}
