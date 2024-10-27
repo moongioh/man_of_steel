@@ -4,9 +4,9 @@ export const ENV = {
   // MySQL configuration
   MYSQL_HOST: process.env.MYSQL_HOST || 'localhost',
   MYSQL_PORT: parseInt(process.env.MYSQL_PORT, 10) || 3306,
-  MYSQL_USER: process.env.MYSQL_USER || 'root',
-  MYSQL_PASSWORD: process.env.MYSQL_PASSWORD || 'qwer1234',
-  MYSQL_DATABASE: process.env.MYSQL_DATABASE || 'mysql',
+  MYSQL_USER: process.env.MYSQL_USER || 'suojae', // Docker 설정에 맞는 사용자 이름 사용
+  MYSQL_PASSWORD: process.env.MYSQL_PASSWORD || 'qwer1234', // Docker에서 설정한 비밀번호
+  MYSQL_DATABASE: process.env.MYSQL_DATABASE || 'semi_project', // MySQL 데이터베이스 이름
 
   // Redis configuration
   REDIS_HOST: process.env.REDIS_HOST || 'localhost',
@@ -16,5 +16,4 @@ export const ENV = {
   // JWT configuration
   JWT_SECRET: process.env.JWT_SECRET || 'qwer1234',
   JWT_EXPIRATION: process.env.JWT_EXPIRATION || '1h', // e.g., 1h, 7d
-
 };
