@@ -6,5 +6,5 @@ final class ApiEndpoints {
   static const String register = '/auth/register';
   static const String login = '/auth/login';
   static const String refreshToken = '/auth/token/refresh';
-  static const String protectedResource = '/auth/protected/resource';
+  static const String protectedResource = '/auth/protected/logout';
 }

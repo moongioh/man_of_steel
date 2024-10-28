@@ -79,7 +79,17 @@ abstract class Result<T, E> {
       return onFailure((this as Failure<T, E>).error);
     }
   }
+
+  // mapError: 실패 시 에러를 변환
+  Result<T, F> mapError<F>(F Function(E error) transform) {
+    if (this is Failure<T, E>) {
+      return Failure<T, F>(transform((this as Failure<T, E>).error));
+    } else {
+      return Success<T, F>((this as Success<T, E>).value);
+    }
+  }
 }
+
 
 class Success<T, E> extends Result<T, E> {
   final T value;
