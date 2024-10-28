@@ -1,8 +1,8 @@
-import { Result } from '../../util/Result';
 import { IUserRepository } from '../../domain/interfaces/user.repository.interface';
 import { DBUserRepository } from './db-user.repository';
 import { CacheUserRepository } from './cache-user.repository';
 import { UserEntity } from '../../domain/entities/user.entity';
+import { Result } from '../../result';
 export declare class UserRepository implements IUserRepository {
     private readonly dbUserRepository;
     private readonly cacheUserRepository;

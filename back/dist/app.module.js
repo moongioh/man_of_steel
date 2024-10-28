@@ -30,7 +30,7 @@ exports.AppModule = AppModule = __decorate([
                 host: process.env.MYSQL_HOST || 'localhost',
                 port: parseInt(process.env.MYSQL_PORT, 10) || 3306,
                 username: process.env.MYSQL_USER || 'root',
-                password: process.env.MYSQL_PASSWORD || '',
+                password: process.env.MYSQL_PASSWORD || '1234',
                 database: process.env.MYSQL_DATABASE || 'test',
                 entities: [user_dao_1.UserDAO],
                 synchronize: true,

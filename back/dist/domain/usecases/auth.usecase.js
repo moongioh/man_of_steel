@@ -16,7 +16,7 @@ exports.AuthUseCase = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_service_1 = require("../../application/services/jwt.service");
 const bcrypt_service_1 = require("../../infrastructure/services/bcrypt.service");
-const Result_1 = require("../../util/Result");
+const result_1 = require("../../result");
 let AuthUseCase = class AuthUseCase {
     constructor(userRepository, jwtService, bcryptService) {
         this.userRepository = userRepository;
@@ -26,37 +26,37 @@ let AuthUseCase = class AuthUseCase {
     async executeLogin(credentials) {
         const userResult = await this.userRepository.findByEmail(credentials.email);
         if (userResult.isFailure()) {
-            return Result_1.Result.failure(new Error('User not found'));
+            return result_1.Result.failure(new Error('User not found'));
         }
         const user = userResult.getValue();
         const isPasswordValid = await this.bcryptService.compare(credentials.password, user.hashedPassword);
         if (!isPasswordValid) {
-            return Result_1.Result.failure(new Error('Invalid credentials'));
+            return result_1.Result.failure(new Error('Invalid credentials'));
         }
         const accessToken = this.jwtService.signAccessToken({ userId: user.id });
         const refreshToken = this.jwtService.signRefreshToken({ userId: user.id });
         await this.userRepository.saveRefreshToken(user.id, refreshToken);
-        return Result_1.Result.success({ accessToken, refreshToken });
+        return result_1.Result.success({ accessToken, refreshToken });
     }
     async executeRegister(user) {
         const existingUserResult = await this.userRepository.findByEmail(user.email);
         if (existingUserResult.isSuccess()) {
-            return Result_1.Result.failure(new Error('User already exists'));
+            return result_1.Result.failure(new Error('User already exists'));
         }
         const hashedPassword = await this.bcryptService.hash(user.password);
         user.hashedPassword = hashedPassword;
         await this.userRepository.save(user);
-        return Result_1.Result.success(undefined);
+        return result_1.Result.success(undefined);
     }
     async refreshTokens(userId, refreshToken) {
         const storedRefreshToken = await this.userRepository.getRefreshToken(userId);
         if (storedRefreshToken !== refreshToken) {
-            return Result_1.Result.failure(new Error('Invalid refresh token'));
+            return result_1.Result.failure(new Error('Invalid refresh token'));
         }
         const newAccessToken = this.jwtService.signAccessToken({ userId });
         const newRefreshToken = this.jwtService.signRefreshToken({ userId });
         await this.userRepository.saveRefreshToken(userId, newRefreshToken);
-        return Result_1.Result.success({
+        return result_1.Result.success({
             accessToken: newAccessToken,
             refreshToken: newRefreshToken,
         });
@@ -64,11 +64,11 @@ let AuthUseCase = class AuthUseCase {
     async logout(userId, accessToken) {
         const decoded = this.jwtService.verifyAccessToken(accessToken);
         if (decoded.userId !== userId) {
-            return Result_1.Result.failure(new Error('Invalid token'));
+            return result_1.Result.failure(new Error('Invalid token'));
         }
         const expiresIn = decoded.exp - decoded.iat;
         await this.userRepository.blacklistToken(accessToken, expiresIn);
-        return Result_1.Result.success(undefined);
+        return result_1.Result.success(undefined);
     }
 };
 exports.AuthUseCase = AuthUseCase;

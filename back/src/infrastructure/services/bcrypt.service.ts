@@ -1,5 +1,3 @@
-// src/infrastructure/services/BcryptService.ts
-
 import * as bcrypt from 'bcrypt';
 import { Injectable } from '@nestjs/common';
 

@@ -3,7 +3,7 @@ import { AuthUseCase } from '../../domain/usecases/auth.usecase';
 import { JWTService } from './jwt.service';
 import { UserEntity } from '../../domain/entities/user.entity';
 import { UserDTO } from '../../presentation/dto/user.dto';
-import { Result } from '../../util/Result';
+import { Result } from '../../result';
 
 @Injectable()
 export class AuthService {

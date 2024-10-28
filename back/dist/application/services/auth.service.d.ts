@@ -1,7 +1,7 @@
 import { AuthUseCase } from '../../domain/usecases/auth.usecase';
 import { JWTService } from './jwt.service';
 import { UserDTO } from '../../presentation/dto/user.dto';
-import { Result } from '../../util/Result';
+import { Result } from '../../result';
 export declare class AuthService {
     private readonly authUseCase;
     private readonly jwtService;

@@ -1,5 +1,3 @@
-// src/presentation/dto/UserDTO.ts
-
 export class UserDTO {
   public id: string;
   public email: string;

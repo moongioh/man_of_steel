@@ -32,4 +32,4 @@ class Result {
     }
 }
 exports.Result = Result;
-//# sourceMappingURL=Result.js.map
+//# sourceMappingURL=result.js.map

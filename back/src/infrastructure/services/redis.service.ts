@@ -1,5 +1,3 @@
-// src/infrastructure/services/RedisService.ts
-
 import { Injectable, Logger } from '@nestjs/common';
 import { createClient, RedisClientType } from 'redis';
 
@@ -52,7 +50,10 @@ export class RedisService {
       this.logger.log(`Redis에서 데이터 가져오기 완료: ${key}`);
       return value;
     } catch (error) {
-      this.logger.error(`Redis에서 데이터 가져오는 중 오류 발생: ${key}`, error);
+      this.logger.error(
+        `Redis에서 데이터 가져오는 중 오류 발생: ${key}`,
+        error,
+      );
       return null;
     }
   }

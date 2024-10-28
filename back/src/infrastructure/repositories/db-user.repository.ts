@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { Result } from '../../util/Result';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../../domain/entities/user.entity';
 import { UserDAO } from '../dao/user.dao';
+import { Result } from '../../result';
 
 @Injectable()
 export class DBUserRepository {
@@ -22,7 +22,6 @@ export class DBUserRepository {
     const userEntity = new UserEntity(
       userDAO.id,
       userDAO.email,
-      undefined,
       userDAO.hashedPassword,
     );
     return Result.success(userEntity);

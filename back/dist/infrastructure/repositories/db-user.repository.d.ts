@@ -1,7 +1,7 @@
-import { Result } from '../../util/Result';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../../domain/entities/user.entity';
 import { UserDAO } from '../dao/user.dao';
+import { Result } from '../../result';
 export declare class DBUserRepository {
     private readonly userRepository;
     constructor(userRepository: Repository<UserDAO>);
