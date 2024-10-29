@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import '../../../core/util/result.dart';
 import '../local/secure_token_service.dart';
-import 'api_endpoints.dart';
 
 final class DioService {
   final Dio _dio = Dio();
@@ -16,9 +15,8 @@ final class DioService {
     _setInterceptors();
   }
 
-  // 기본 Dio 설정
+  // 기본 Dio 설정 (baseUrl 설정 제거)
   void _setBaseOptions() {
-    _dio.options.baseUrl = ApiEndpoints.baseUrl;
     _dio.options.connectTimeout = const Duration(milliseconds: 5000);
     _dio.options.receiveTimeout = const Duration(milliseconds: 3000);
   }
@@ -58,22 +56,26 @@ final class DioService {
   }
 
   // GET 요청
-  Future<Result<T, DioException>> get<T>(String path, {Map<String, dynamic>? queryParameters}) async {
+  Future<Result<T, DioException>> get<T>(String baseUrl, String path, {Map<String, dynamic>? queryParameters}) async {
+    _dio.options.baseUrl = baseUrl; // 동적으로 baseUrl 설정
     return makeRequest(() => _dio.get<T>(path, queryParameters: queryParameters));
   }
 
   // POST 요청
-  Future<Result<T, DioException>> post<T>(String path, {dynamic data}) async {
+  Future<Result<T, DioException>> post<T>(String baseUrl, String path, {dynamic data}) async {
+    _dio.options.baseUrl = baseUrl; // 동적으로 baseUrl 설정
     return makeRequest(() => _dio.post<T>(path, data: data));
   }
 
   // PUT 요청
-  Future<Result<T, DioException>> put<T>(String path, {dynamic data}) async {
+  Future<Result<T, DioException>> put<T>(String baseUrl, String path, {dynamic data}) async {
+    _dio.options.baseUrl = baseUrl; // 동적으로 baseUrl 설정
     return makeRequest(() => _dio.put<T>(path, data: data));
   }
 
   // DELETE 요청
-  Future<Result<T, DioException>> delete<T>(String path, {dynamic data}) async {
+  Future<Result<T, DioException>> delete<T>(String baseUrl, String path, {dynamic data}) async {
+    _dio.options.baseUrl = baseUrl; // 동적으로 baseUrl 설정
     return makeRequest(() => _dio.delete<T>(path, data: data));
   }
 
