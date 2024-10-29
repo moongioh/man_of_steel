@@ -13,7 +13,7 @@ async function bootstrap() {
   });
 
   const port = 3000;
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0'); // IPv4 주소로 바인딩
 
   const config = new DocumentBuilder()
     .setTitle('Auth API')
