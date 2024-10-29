@@ -1,6 +1,7 @@
 final class ApiEndpoints {
   // 기본 API URL
-  static const String baseUrl = 'https://api.manofsteel.com';
+  // static const String baseUrl = 'https://api.manofsteel.com';
+  static const String baseUrl = 'http://localhost:3000';
 
   // 인증 관련 엔드포인트
   static const String register = '/auth/register';

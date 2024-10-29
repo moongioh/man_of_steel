@@ -15,15 +15,14 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     });
   }
 
-  Future<void> _onSignUpButtonPressed(
-      String email, String password, Emitter<SignUpState> emit) async {
+  Future<void> _onSignUpButtonPressed(String email, String password, Emitter<SignUpState> emit) async {
     emit(const SignUpState.loading());
 
     final result = await signUpUseCase(email, password);
 
     result.fold(
-          (user) => emit(SignUpState.success(user)),
-          (error) => emit(SignUpState.failure(error.toString())),
+      (_) => emit( SignUpState.success()),
+      (error) => emit(SignUpState.failure(error.toString())),
     );
   }
 }

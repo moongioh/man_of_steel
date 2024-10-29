@@ -25,6 +25,29 @@ class _WebSignUpViewState extends State<WebSignUpView> {
   bool isConfirmPasswordValid = false;
   bool isLoading = false;
 
+  void navigateWithAnimation(BuildContext context) {
+    Navigator.of(context).push(_createRoute());
+  }
+
+  Route _createRoute() {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => WebSignUpView(),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0); // 오른쪽에서 들어오는 시작점
+        const end = Offset.zero;
+        const curve = Curves.ease;
+
+        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var offsetAnimation = animation.drive(tween);
+
+        return SlideTransition(
+          position: offsetAnimation,
+          child: child,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,7 +87,7 @@ class _WebSignUpViewState extends State<WebSignUpView> {
                                   isLoading = true;
                                 });
                               },
-                              success: (user) {
+                              success: () {
                                 setState(() {
                                   isLoading = false;
                                 });
@@ -131,7 +154,11 @@ class _WebSignUpViewState extends State<WebSignUpView> {
                                             ),
                                             recognizer: TapGestureRecognizer()
                                               ..onTap = () {
-                                                context.go('/'); // 로그인 화면으로 이동
+                                                if (context.canPop()) {
+                                                  Navigator.of(context).pushReplacement(_createRoute());
+                                                } else {
+                                                  context.go('/'); // 필요 시 특정 경로로 이동
+                                                }
                                               },
                                           ),
                                         ],
