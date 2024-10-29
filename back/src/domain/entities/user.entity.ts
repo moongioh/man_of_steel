@@ -1,13 +1,10 @@
-// src/domain/entities/UserEntity.ts
-
 export class UserEntity {
-  public id: string;
-  public email: string;
-  public password: string; // 원시 비밀번호
-  public hashedPassword: string; // 해시된 비밀번호
+  public id: string; // UUID for internal use
+  public email: string; // Used as the unique identifier for login
+  public password?: string; // Raw password
+  public hashedPassword?: string; // Hashed password
 
-  constructor(id: string, email: string, password?: string, hashedPassword?: string) {
-    this.id = id;
+  constructor(email: string, password?: string, hashedPassword?: string) {
     this.email = email;
     this.password = password;
     this.hashedPassword = hashedPassword;

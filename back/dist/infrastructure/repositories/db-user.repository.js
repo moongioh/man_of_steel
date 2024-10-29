@@ -36,12 +36,11 @@ let DBUserRepository = class DBUserRepository {
         if (!userDAO) {
             return result_1.Result.failure(new Error('User not found'));
         }
-        const userEntity = new user_entity_1.UserEntity(userDAO.id, userDAO.email, undefined, userDAO.hashedPassword);
+        const userEntity = new user_entity_1.UserEntity(userDAO.id, userDAO.email, userDAO.hashedPassword);
         return result_1.Result.success(userEntity);
     }
     async save(user) {
         const userDAO = new user_dao_1.UserDAO();
-        userDAO.id = user.id;
         userDAO.email = user.email;
         userDAO.hashedPassword = user.hashedPassword;
         await this.userRepository.save(userDAO);

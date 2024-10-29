@@ -1,22 +1,19 @@
-import { IAuthUseCase } from '../interfaces/auth.usecase.interface';
 import { IUserRepository } from '../interfaces/user.repository.interface';
 import { JWTService } from '../../application/services/jwt.service';
-import { BcryptService } from '../../infrastructure/services/bcrypt.service';
 import { UserEntity } from '../entities/user.entity';
 import { Result } from '../../result';
-export declare class AuthUseCase implements IAuthUseCase {
+export declare class AuthUseCase {
     private readonly userRepository;
     private readonly jwtService;
-    private readonly bcryptService;
-    constructor(userRepository: IUserRepository, jwtService: JWTService, bcryptService: BcryptService);
+    constructor(userRepository: IUserRepository, jwtService: JWTService);
     executeLogin(credentials: UserEntity): Promise<Result<{
         accessToken: string;
         refreshToken: string;
     }>>;
-    executeRegister(user: UserEntity): Promise<Result<void>>;
-    refreshTokens(userId: string, refreshToken: string): Promise<Result<{
+    executeRegister(user: UserEntity): Promise<Result<UserEntity>>;
+    refreshTokens(email: string, refreshToken: string): Promise<Result<{
         accessToken: string;
         refreshToken: string;
     }>>;
-    logout(userId: string, accessToken: string): Promise<Result<void>>;
+    logout(email: string, accessToken: string): Promise<Result<void>>;
 }

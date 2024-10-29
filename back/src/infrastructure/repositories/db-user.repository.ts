@@ -37,7 +37,6 @@ export class DBUserRepository {
     const userEntity = new UserEntity(
       userDAO.id,
       userDAO.email,
-      undefined,
       userDAO.hashedPassword,
     );
     return Result.success(userEntity);
@@ -45,7 +44,6 @@ export class DBUserRepository {
 
   public async save(user: UserEntity): Promise<Result<void>> {
     const userDAO = new UserDAO();
-    userDAO.id = user.id;
     userDAO.email = user.email;
     userDAO.hashedPassword = user.hashedPassword;
 

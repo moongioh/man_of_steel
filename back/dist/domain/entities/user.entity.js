@@ -2,8 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserEntity = void 0;
 class UserEntity {
-    constructor(id, email, password, hashedPassword) {
-        this.id = id;
+    constructor(email, password, hashedPassword) {
         this.email = email;
         this.password = password;
         this.hashedPassword = hashedPassword;

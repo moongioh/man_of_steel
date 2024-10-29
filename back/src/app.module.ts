@@ -15,10 +15,10 @@ import { CacheUserRepository } from './infrastructure/repositories/cache-user.re
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: process.env.MYSQL_HOST || 'localhost',
+      host: process.env.MYSQL_HOST || '10.0.0.201',
       port: parseInt(process.env.MYSQL_PORT, 10) || 3306,
       username: process.env.MYSQL_USER || 'root',
-      password: process.env.MYSQL_PASSWORD || '1234',
+      password: process.env.MYSQL_PASSWORD || 'It12345!',
       database: process.env.MYSQL_DATABASE || 'test',
       entities: [UserDAO],
       synchronize: true,
@@ -37,8 +37,10 @@ import { CacheUserRepository } from './infrastructure/repositories/cache-user.re
       provide: 'IUserRepository',
       useClass: UserRepository,
     },
+    UserRepository,
     DBUserRepository,
     CacheUserRepository,
   ],
+  exports: [AuthService, JWTService],
 })
 export class AppModule {}

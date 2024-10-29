@@ -27,11 +27,11 @@ let AuthService = class AuthService {
         const userEntity = new user_entity_1.UserEntity('', user.email, user.password);
         return this.authUseCase.executeRegister(userEntity);
     }
-    async refreshTokens(userId, refreshToken) {
-        return this.authUseCase.refreshTokens(userId, refreshToken);
+    async refreshTokens(email, refreshToken) {
+        return this.authUseCase.refreshTokens(email, refreshToken);
     }
-    async logout(userId, accessToken) {
-        return this.authUseCase.logout(userId, accessToken);
+    async logout(email, accessToken) {
+        return this.authUseCase.logout(email, accessToken);
     }
     async verifyToken(token) {
         try {

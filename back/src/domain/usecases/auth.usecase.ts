@@ -1,18 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { IAuthUseCase } from '../interfaces/auth.usecase.interface';
 import { IUserRepository } from '../interfaces/user.repository.interface';
 import { JWTService } from '../../application/services/jwt.service';
-import { BcryptService } from '../../infrastructure/services/bcrypt.service';
 import { UserEntity } from '../entities/user.entity';
 import { Result } from '../../result';
 
 @Injectable()
-export class AuthUseCase implements IAuthUseCase {
+export class AuthUseCase {
   constructor(
-    @Inject('IUserRepository')
+    @Inject('IUserRepository') // Inject with the correct token
     private readonly userRepository: IUserRepository,
     private readonly jwtService: JWTService,
-    private readonly bcryptService: BcryptService,
   ) {}
 
   public async executeLogin(
@@ -24,10 +21,7 @@ export class AuthUseCase implements IAuthUseCase {
     }
 
     const user = userResult.getValue();
-    const isPasswordValid = await this.bcryptService.compare(
-      credentials.password,
-      user.hashedPassword,
-    );
+    const isPasswordValid = user.password === credentials.password;
     if (!isPasswordValid) {
       return Result.failure(new Error('Invalid credentials'));
     }
@@ -35,40 +29,42 @@ export class AuthUseCase implements IAuthUseCase {
     const accessToken = this.jwtService.signAccessToken({ userId: user.id });
     const refreshToken = this.jwtService.signRefreshToken({ userId: user.id });
 
-    await this.userRepository.saveRefreshToken(user.id, refreshToken);
-
+    await this.userRepository.saveRefreshToken(user.email, refreshToken);
     return Result.success({ accessToken, refreshToken });
   }
 
-  public async executeRegister(user: UserEntity): Promise<Result<void>> {
+  public async executeRegister(user: UserEntity): Promise<Result<UserEntity>> {
     const existingUserResult = await this.userRepository.findByEmail(
       user.email,
     );
     if (existingUserResult.isSuccess()) {
       return Result.failure(new Error('User already exists'));
     }
-
-    const hashedPassword = await this.bcryptService.hash(user.password);
-    user.hashedPassword = hashedPassword;
-    await this.userRepository.save(user);
-    return Result.success(undefined);
+    // TODO: 패스워드 해싱하기
+    const hashedPassword = user.password;
+    const newUser = new UserEntity(user.email, hashedPassword, hashedPassword);
+    await this.userRepository.save(newUser);
+    return Result.success(newUser);
   }
 
   public async refreshTokens(
-    userId: string,
+    email: string,
     refreshToken: string,
-  ): Promise<Result<{ accessToken: string; refreshToken: string }>> {
-    const storedRefreshToken =
-      await this.userRepository.getRefreshToken(userId);
+  ): Promise<
+    Result<{
+      accessToken: string;
+      refreshToken: string;
+    }>
+  > {
+    const storedRefreshToken = await this.userRepository.getRefreshToken(email);
     if (storedRefreshToken !== refreshToken) {
       return Result.failure(new Error('Invalid refresh token'));
     }
 
-    const newAccessToken = this.jwtService.signAccessToken({ userId });
-    const newRefreshToken = this.jwtService.signRefreshToken({ userId });
+    const newAccessToken = this.jwtService.signAccessToken({ email });
+    const newRefreshToken = this.jwtService.signRefreshToken({ email });
 
-    await this.userRepository.saveRefreshToken(userId, newRefreshToken);
-
+    await this.userRepository.saveRefreshToken(email, newRefreshToken);
     return Result.success({
       accessToken: newAccessToken,
       refreshToken: newRefreshToken,
@@ -76,17 +72,16 @@ export class AuthUseCase implements IAuthUseCase {
   }
 
   public async logout(
-    userId: string,
+    email: string,
     accessToken: string,
   ): Promise<Result<void>> {
     const decoded = this.jwtService.verifyAccessToken(accessToken);
-    if (decoded.userId !== userId) {
+    if (decoded.email !== email) {
       return Result.failure(new Error('Invalid token'));
     }
 
     const expiresIn = decoded.exp - decoded.iat;
     await this.userRepository.blacklistToken(accessToken, expiresIn);
-
     return Result.success(undefined);
   }
 }

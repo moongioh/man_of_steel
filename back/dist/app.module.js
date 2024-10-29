@@ -27,10 +27,10 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'mysql',
-                host: process.env.MYSQL_HOST || 'localhost',
+                host: process.env.MYSQL_HOST || '10.0.0.201',
                 port: parseInt(process.env.MYSQL_PORT, 10) || 3306,
                 username: process.env.MYSQL_USER || 'root',
-                password: process.env.MYSQL_PASSWORD || '1234',
+                password: process.env.MYSQL_PASSWORD || 'It12345!',
                 database: process.env.MYSQL_DATABASE || 'test',
                 entities: [user_dao_1.UserDAO],
                 synchronize: true,
@@ -49,9 +49,11 @@ exports.AppModule = AppModule = __decorate([
                 provide: 'IUserRepository',
                 useClass: user_repository_1.UserRepository,
             },
+            user_repository_1.UserRepository,
             db_user_repository_1.DBUserRepository,
             cache_user_repository_1.CacheUserRepository,
         ],
+        exports: [auth_service_1.AuthService, jwt_service_1.JWTService],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

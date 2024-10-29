@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { AuthUseCase } from '../../domain/usecases/auth.usecase';
 import { JWTService } from './jwt.service';
 import { UserEntity } from '../../domain/entities/user.entity';
-import { UserDTO } from '../../presentation/dto/user.dto';
 import { Result } from '../../result';
+import { UserDTO } from '../../presentation/dto/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -23,23 +23,28 @@ export class AuthService {
     return this.authUseCase.executeLogin(userEntity);
   }
 
-  public async register(user: UserDTO): Promise<Result<void>> {
+  public async register(user: UserDTO): Promise<Result<UserEntity>> {
     const userEntity = new UserEntity('', user.email, user.password);
     return this.authUseCase.executeRegister(userEntity);
   }
 
   public async refreshTokens(
-    userId: string,
+    email: string,
     refreshToken: string,
-  ): Promise<Result<{ accessToken: string; refreshToken: string }>> {
-    return this.authUseCase.refreshTokens(userId, refreshToken);
+  ): Promise<
+    Result<{
+      accessToken: string;
+      refreshToken: string;
+    }>
+  > {
+    return this.authUseCase.refreshTokens(email, refreshToken);
   }
 
   public async logout(
-    userId: string,
+    email: string,
     accessToken: string,
   ): Promise<Result<void>> {
-    return this.authUseCase.logout(userId, accessToken);
+    return this.authUseCase.logout(email, accessToken);
   }
 
   public async verifyToken(token: string): Promise<boolean> {

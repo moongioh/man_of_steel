@@ -21,23 +21,14 @@ let UserRepository = class UserRepository {
     async findByEmail(email) {
         return this.dbUserRepository.findByEmail(email);
     }
-    async findById(id) {
-        return this.dbUserRepository.findById(id);
-    }
     async save(user) {
         return this.dbUserRepository.save(user);
     }
-    async saveRefreshToken(userId, refreshToken) {
-        await this.cacheUserRepository.saveRefreshToken(userId, refreshToken);
+    async saveRefreshToken(email, refreshToken) {
+        await this.cacheUserRepository.saveRefreshToken(email, refreshToken);
     }
-    async getRefreshToken(userId) {
-        return this.cacheUserRepository.getRefreshToken(userId);
-    }
-    async blacklistToken(token, expiresIn) {
-        await this.cacheUserRepository.blacklistToken(token, expiresIn);
-    }
-    async isTokenBlacklisted(token) {
-        return this.cacheUserRepository.isTokenBlacklisted(token);
+    async getRefreshToken(email) {
+        return this.cacheUserRepository.getRefreshToken(email);
     }
 };
 exports.UserRepository = UserRepository;

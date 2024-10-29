@@ -6,7 +6,7 @@ export interface IAuthUseCase {
     credentials: UserEntity,
   ): Promise<Result<{ accessToken: string; refreshToken: string }>>;
 
-  executeRegister(user: UserEntity): Promise<Result<void>>;
+  executeRegister(user: UserEntity): Promise<Result<UserEntity>>;
 
   refreshTokens(
     userId: string,

@@ -2,8 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserDTO = void 0;
 class UserDTO {
-    constructor(id, email, password) {
-        this.id = id;
+    constructor(email, password) {
         this.email = email;
         this.password = password;
     }

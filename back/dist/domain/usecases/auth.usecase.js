@@ -15,13 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthUseCase = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_service_1 = require("../../application/services/jwt.service");
-const bcrypt_service_1 = require("../../infrastructure/services/bcrypt.service");
+const user_entity_1 = require("../entities/user.entity");
 const result_1 = require("../../result");
 let AuthUseCase = class AuthUseCase {
-    constructor(userRepository, jwtService, bcryptService) {
+    constructor(userRepository, jwtService) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
-        this.bcryptService = bcryptService;
     }
     async executeLogin(credentials) {
         const userResult = await this.userRepository.findByEmail(credentials.email);
@@ -29,13 +28,13 @@ let AuthUseCase = class AuthUseCase {
             return result_1.Result.failure(new Error('User not found'));
         }
         const user = userResult.getValue();
-        const isPasswordValid = await this.bcryptService.compare(credentials.password, user.hashedPassword);
+        const isPasswordValid = user.password === credentials.password;
         if (!isPasswordValid) {
             return result_1.Result.failure(new Error('Invalid credentials'));
         }
         const accessToken = this.jwtService.signAccessToken({ userId: user.id });
         const refreshToken = this.jwtService.signRefreshToken({ userId: user.id });
-        await this.userRepository.saveRefreshToken(user.id, refreshToken);
+        await this.userRepository.saveRefreshToken(user.email, refreshToken);
         return result_1.Result.success({ accessToken, refreshToken });
     }
     async executeRegister(user) {
@@ -43,27 +42,27 @@ let AuthUseCase = class AuthUseCase {
         if (existingUserResult.isSuccess()) {
             return result_1.Result.failure(new Error('User already exists'));
         }
-        const hashedPassword = await this.bcryptService.hash(user.password);
-        user.hashedPassword = hashedPassword;
-        await this.userRepository.save(user);
-        return result_1.Result.success(undefined);
+        const hashedPassword = user.password;
+        const newUser = new user_entity_1.UserEntity(user.email, hashedPassword, hashedPassword);
+        await this.userRepository.save(newUser);
+        return result_1.Result.success(newUser);
     }
-    async refreshTokens(userId, refreshToken) {
-        const storedRefreshToken = await this.userRepository.getRefreshToken(userId);
+    async refreshTokens(email, refreshToken) {
+        const storedRefreshToken = await this.userRepository.getRefreshToken(email);
         if (storedRefreshToken !== refreshToken) {
             return result_1.Result.failure(new Error('Invalid refresh token'));
         }
-        const newAccessToken = this.jwtService.signAccessToken({ userId });
-        const newRefreshToken = this.jwtService.signRefreshToken({ userId });
-        await this.userRepository.saveRefreshToken(userId, newRefreshToken);
+        const newAccessToken = this.jwtService.signAccessToken({ email });
+        const newRefreshToken = this.jwtService.signRefreshToken({ email });
+        await this.userRepository.saveRefreshToken(email, newRefreshToken);
         return result_1.Result.success({
             accessToken: newAccessToken,
             refreshToken: newRefreshToken,
         });
     }
-    async logout(userId, accessToken) {
+    async logout(email, accessToken) {
         const decoded = this.jwtService.verifyAccessToken(accessToken);
-        if (decoded.userId !== userId) {
+        if (decoded.email !== email) {
             return result_1.Result.failure(new Error('Invalid token'));
         }
         const expiresIn = decoded.exp - decoded.iat;
@@ -75,7 +74,6 @@ exports.AuthUseCase = AuthUseCase;
 exports.AuthUseCase = AuthUseCase = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)('IUserRepository')),
-    __metadata("design:paramtypes", [Object, jwt_service_1.JWTService,
-        bcrypt_service_1.BcryptService])
+    __metadata("design:paramtypes", [Object, jwt_service_1.JWTService])
 ], AuthUseCase);
 //# sourceMappingURL=auth.usecase.js.map

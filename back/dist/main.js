@@ -30,7 +30,12 @@ const swagger_1 = require("@nestjs/swagger");
 async function bootstrap() {
     dotenv.config();
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
-    const port = process.env.PORT || 3000;
+    app.enableCors({
+        origin: 'http://localhost:8000',
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        credentials: true,
+    });
+    const port = 3000;
     await app.listen(port);
     const config = new swagger_1.DocumentBuilder()
         .setTitle('Auth API')

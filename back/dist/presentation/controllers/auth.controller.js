@@ -11,25 +11,45 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var AuthController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("../../application/services/auth.service");
 const user_dto_1 = require("../dto/user.dto");
-let AuthController = class AuthController {
+const result_1 = require("../../result");
+let AuthController = AuthController_1 = class AuthController {
     constructor(authService) {
         this.authService = authService;
+        this.logger = new common_1.Logger(AuthController_1.name);
     }
     async login(credentials) {
-        return this.authService.login(credentials);
+        this.logger.log(`Login attempt for email: ${credentials.email}`);
+        const result = await this.authService.login(credentials);
+        if (result.isFailure()) {
+            this.logger.error('Login failed');
+        }
+        else {
+            this.logger.log('Login successful');
+        }
+        return result;
     }
     async register(user) {
-        return this.authService.register(user);
+        this.logger.log(`Register attempt for email: ${user.email}`);
+        const result = await this.authService.register(user);
+        if (result.isFailure()) {
+            this.logger.error('Registration failed');
+            return result_1.Result.failure(result.getError());
+        }
+        this.logger.log('Registration successful');
+        return result_1.Result.success({ email: result.getValue().email });
     }
     async refresh(body) {
+        this.logger.log(`Refresh tokens for userId: ${body.userId}`);
         return this.authService.refreshTokens(body.userId, body.refreshToken);
     }
     async logout(body) {
+        this.logger.log(`Logout attempt for userId: ${body.userId}`);
         return this.authService.logout(body.userId, body.accessToken);
     }
 };
@@ -62,7 +82,7 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "logout", null);
-exports.AuthController = AuthController = __decorate([
+exports.AuthController = AuthController = AuthController_1 = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])
 ], AuthController);
