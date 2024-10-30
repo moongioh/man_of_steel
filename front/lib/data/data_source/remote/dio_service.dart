@@ -19,8 +19,8 @@ final class DioService {
   // 기본 Dio 설정
   void _setBaseOptions() {
     _dio.options.baseUrl = ApiEndpoints.baseUrl;
-    _dio.options.connectTimeout = const Duration(milliseconds: 5000);
-    _dio.options.receiveTimeout = const Duration(milliseconds: 3000);
+    _dio.options.connectTimeout = const Duration(seconds: 20); // 20초로 변경
+    _dio.options.receiveTimeout = const Duration(seconds: 20); // 20초로 변경
   }
 
   // 요청 인터셉터 설정
