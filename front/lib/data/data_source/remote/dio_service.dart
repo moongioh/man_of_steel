@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
+import 'dart:io';
 import '../../../core/util/result.dart';
 import '../local/secure_token_service.dart';
 import 'api_endpoints.dart';
@@ -13,14 +15,27 @@ final class DioService {
 
   void _initializeDio() {
     _setBaseOptions();
+    _disableCertificateValidation(); // 인증서 검증 비활성화 설정
     _setInterceptors();
   }
 
   // 기본 Dio 설정
   void _setBaseOptions() {
-    _dio.options.baseUrl = ApiEndpoints.baseUrl;
-    _dio.options.connectTimeout = const Duration(seconds: 20); // 20초로 변경
-    _dio.options.receiveTimeout = const Duration(seconds: 20); // 20초로 변경
+    _dio.options
+      ..baseUrl = ApiEndpoints.baseUrl
+      ..connectTimeout = const Duration(seconds: 20)
+      ..receiveTimeout = const Duration(seconds: 20);
+  }
+
+  // 인증서 검증 비활성화 설정
+  void _disableCertificateValidation() {
+    final adapter = IOHttpClientAdapter();
+    adapter.createHttpClient = () {
+      final client = HttpClient();
+      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+      return client;
+    };
+    _dio.httpClientAdapter = adapter;
   }
 
   // 요청 인터셉터 설정
