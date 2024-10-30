@@ -1,6 +1,6 @@
 final class ApiEndpoints {
   // 기본 API URL 리스트
-  static const List<String> baseUrls = ['http://172.16.0.11:3000']; //haproxy url
+  static const List<String> baseUrls = ['http://localhost:3000'];
 
   // 인증 관련 엔드포인트
   static String register(String baseUrl) => '$baseUrl/auth/register';
