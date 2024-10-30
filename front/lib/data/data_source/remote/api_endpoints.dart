@@ -1,6 +1,6 @@
 final class ApiEndpoints {
   // 기본 API URL 리스트
-  static const List<String> baseUrls = ['http://localhost:3000'];
+  static const String baseUrl = 'http://localhost:3000';
 
   // 인증 관련 엔드포인트
   static String register(String baseUrl) => '$baseUrl/auth/register';

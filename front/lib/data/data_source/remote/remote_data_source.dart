@@ -10,7 +10,7 @@ final class RemoteDataSource {
 
   Future<Result<UserDTO, Exception>> signIn(String email, String password) async {
     final data = {'email': email, 'password': password};
-    final baseUrl = ApiEndpoints.baseUrls[0];
+    final baseUrl = ApiEndpoints.baseUrl;
 
     try {
       final result = await dioService.post<Map<String, dynamic>>(baseUrl, ApiEndpoints.login as String, data: data);
@@ -32,7 +32,7 @@ final class RemoteDataSource {
 
   Future<Result<UserDTO, Exception>> signUp(String email, String password) async {
     final data = {'email': email, 'password': password};
-    final baseUrl = ApiEndpoints.baseUrls[1]; // 두 번째 baseUrl 사용 (172.16.0.102)
+    final baseUrl = ApiEndpoints.baseUrl;
 
     try {
       final result = await dioService.post<Map<String, dynamic>>(baseUrl, ApiEndpoints.register as String, data: data);
