@@ -12,7 +12,7 @@ async function bootstrap() {
     credentials: false,
   });
 
-  const port = 80;
+  const port = 3000;
   await app.listen(port);
 
   const config = new DocumentBuilder()
