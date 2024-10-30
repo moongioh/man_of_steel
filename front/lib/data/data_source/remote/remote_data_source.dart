@@ -10,44 +10,50 @@ final class RemoteDataSource {
 
   Future<Result<UserDTO, Exception>> signIn(String email, String password) async {
     final data = {'email': email, 'password': password};
-    final baseUrl = ApiEndpoints.baseUrl;
 
     try {
-      final result = await dioService.post<Map<String, dynamic>>(baseUrl, ApiEndpoints.login as String, data: data);
+      final result = await dioService.post<Map<String, dynamic>>(ApiEndpoints.login, data: data);
 
+      // 응답 데이터가 올바른지 확인
       if (result.isSuccess) {
         final responseData = result.success;
         if (responseData != null) {
           return Success(UserDTO.fromJson(responseData));
         } else {
+          // 응답 데이터가 null인 경우 에러 처리
           return Failure(Exception('응답 데이터가 null입니다.'));
         }
       } else {
+        // 오류 발생 시 상세 정보 로그
         return Failure(Exception('로그인 실패: ${result.error?.message}'));
       }
     } catch (e) {
+      // 예외 발생 시 예외 처리
       return Failure(Exception('알 수 없는 오류 발생: $e'));
     }
   }
 
   Future<Result<UserDTO, Exception>> signUp(String email, String password) async {
     final data = {'email': email, 'password': password};
-    final baseUrl = ApiEndpoints.baseUrl;
 
     try {
-      final result = await dioService.post<Map<String, dynamic>>(baseUrl, ApiEndpoints.register as String, data: data);
+      final result = await dioService.post<Map<String, dynamic>>(ApiEndpoints.register, data: data);
 
+      // 응답 데이터가 올바른지 확인
       if (result.isSuccess) {
         final responseData = result.success;
         if (responseData != null) {
           return Success(UserDTO.fromJson(responseData));
         } else {
+          // 응답 데이터가 null인 경우 에러 처리
           return Failure(Exception('응답 데이터가 null입니다.'));
         }
       } else {
+        // 오류 발생 시 상세 정보 로그
         return Failure(Exception('회원가입 실패: ${result.error?.message}'));
       }
     } catch (e) {
+      // 예외 발생 시 예외 처리
       return Failure(Exception('알 수 없는 오류 발생: $e'));
     }
   }
